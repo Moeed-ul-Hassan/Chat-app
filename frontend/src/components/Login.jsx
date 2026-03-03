@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageSquare, User, Hash, ArrowRight } from 'lucide-react';
+import { MessageSquare, User, Hash, ArrowRight, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Login = ({ onJoin }) => {
@@ -14,68 +14,81 @@ const Login = ({ onJoin }) => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-chat-user-bubble/20 via-chat-bg to-chat-bg">
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#f8fafc] relative overflow-hidden">
+            {/* Soft Background Accents */}
+            <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#ede9fe] rounded-full blur-[100px] opacity-60" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#e0e7ff] rounded-full blur-[100px] opacity-60" />
+
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-md"
+                className="w-full max-w-md relative z-10"
             >
-                <div className="flex justify-center mb-8">
-                    <div className="p-4 bg-chat-accent/10 rounded-2xl border border-chat-accent/20">
-                        <MessageSquare size={48} className="text-chat-accent" />
+                <div className="bg-white rounded-[2.5rem] p-6 sm:p-10 shadow-[0_20px_50px_rgba(139,92,246,0.08)] border border-white">
+                    <div className="flex flex-col items-center text-center mb-8 sm:mb-10">
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#8b5cf6] to-[#a78bfa] rounded-3xl flex items-center justify-center shadow-lg shadow-violet-200 mb-6"
+                        >
+                            <MessageSquare size={32} sm:size={36} className="text-white" />
+                        </motion.div>
+                        <h1 className="text-2xl sm:text-3xl font-black text-slate-800 mb-2">Good Day!</h1>
+                        <p className="text-sm sm:text-base text-slate-500 font-medium">Welcome to Echo Grid</p>
                     </div>
-                </div>
 
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold mb-2">Welcome</h1>
-                        <p className="text-slate-400">Join a room to start chatting</p>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2 ml-1">Username</label>
-                            <div className="relative">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-xs sm:text-sm font-bold text-slate-400 ml-1">Identity</label>
+                            <div className="relative group">
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#8b5cf6] transition-colors" size={18} />
                                 <input
                                     type="text"
                                     required
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full bg-chat-secondary border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-chat-accent/50 transition-all"
-                                    placeholder="Enter your name..."
+                                    className="w-full bg-[#f1f5f9]/50 border-2 border-transparent rounded-[1.25rem] pl-11 sm:pl-12 pr-4 py-3 sm:py-4 text-sm sm:text-base text-slate-700 focus:outline-none focus:bg-white focus:border-[#8b5cf6]/20 transition-all font-medium"
+                                    placeholder="Enter username"
                                 />
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2 ml-1">Room Name</label>
-                            <div className="relative">
-                                <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                        <div className="space-y-2">
+                            <label className="text-xs sm:text-sm font-bold text-slate-400 ml-1">Frequency</label>
+                            <div className="relative group">
+                                <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#8b5cf6] transition-colors" size={18} />
                                 <input
                                     type="text"
                                     required
                                     value={room}
                                     onChange={(e) => setRoom(e.target.value)}
-                                    className="w-full bg-chat-secondary border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-chat-accent/50 transition-all"
-                                    placeholder="Room name..."
+                                    className="w-full bg-[#f1f5f9]/50 border-2 border-transparent rounded-[1.25rem] pl-11 sm:pl-12 pr-4 py-3 sm:py-4 text-sm sm:text-base text-slate-700 focus:outline-none focus:bg-white focus:border-[#8b5cf6]/20 transition-all font-medium"
+                                    placeholder="Room name"
                                 />
                             </div>
                         </div>
 
                         <button
                             type="submit"
-                            className="w-full group relative overflow-hidden bg-chat-accent text-slate-900 font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-chat-accent/90 transition-all shadow-lg shadow-chat-accent/20"
+                            className="w-full bg-[#8b5cf6] text-white font-black py-4 sm:py-4.5 rounded-[1.25rem] flex items-center justify-center gap-3 hover:bg-[#7c3aed] transition-all shadow-xl shadow-violet-200 active:scale-[0.98] mt-4 text-sm sm:text-base"
                         >
-                            Connect Now
-                            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                            <span>GET STARTED</span>
+                            <ArrowRight size={20} />
                         </button>
                     </form>
                 </div>
 
-                <p className="text-center mt-8 text-slate-500 text-sm">
-                    Go Backend Powered • Real-time Distributed Chat
-                </p>
+                <div className="mt-12 flex flex-col items-center gap-6">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-2xl border border-white">
+                        <Sparkles size={14} className="text-[#8b5cf6]" />
+                        <span className="text-sm font-bold text-slate-500">Echo Protocol v4.0</span>
+                    </div>
+
+                    <div className="text-center">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Developed By</span>
+                        <p className="text-sm font-black text-slate-600 bg-white/50 px-4 py-1.5 rounded-full border border-white">Moeed ul Hassan</p>
+                    </div>
+                </div>
             </motion.div>
         </div>
     );

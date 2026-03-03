@@ -25,6 +25,20 @@ export const useChat = (room, username) => {
         socket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
+                const content = data.content || '';
+
+                // Robust check for simulated bot responses
+                const botPrefixRegex = /^BOT_RESPONSE\|/i;
+                if (botPrefixRegex.test(content.trim())) {
+                    const actualMessage = content.trim().replace(botPrefixRegex, '');
+                    setMessages((prev) => [...prev, {
+                        username: 'Jarvis AI',
+                        content: actualMessage,
+                        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    }]);
+                    return;
+                }
+
                 setMessages((prev) => [...prev, {
                     ...data,
                     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })

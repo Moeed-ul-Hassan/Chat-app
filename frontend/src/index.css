@@ -1,38 +1,42 @@
 @import "tailwindcss";
-
-@theme {
-  --color-chat-bg: #0f172a;
-  --color-chat-secondary: #1e293b;
-  --color-chat-accent: #38bdf8;
-  --color-chat-bubble: #334155;
-  --color-chat-user-bubble: #0369a1;
-}
-
-:root {
-  color-scheme: dark;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #0f172a;
-  color: white;
-  overflow: hidden;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
+ 
+ @theme {
+   --color-chat-bg: #f8fafc;
+   --color-chat-secondary: #ffffff;
+   --color-chat-accent: #8b5cf6;
+   --color-chat-accent-soft: #ede9fe;
+   --color-chat-bubble-sent: #c7d2fe;
+   --color-chat-bubble-rec: #ffffff;
+   --color-chat-text: #1e293b;
+   --color-chat-text-muted: #64748b;
+ }
+ 
+ :root {
+   color-scheme: light;
+ }
+ 
+ body {
+   margin: 0;
+   padding: 0;
+   background-color: #f8fafc;
+   color: #1e293b;
+   overflow: hidden;
+   font-family: 'Outfit', 'Inter', sans-serif;
+ }
+ 
+ ::-webkit-scrollbar {
+   width: 6px;
+ }
+ 
+ ::-webkit-scrollbar-track {
+   background: transparent;
+ }
+ 
+ ::-webkit-scrollbar-thumb {
+   background: #e2e8f0;
+   border-radius: 10px;
+ }
+ 
+ ::-webkit-scrollbar-thumb:hover {
+   background: #cbd5e1;
+ }
