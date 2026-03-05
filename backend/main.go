@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"os"
+
 	"github.com/gorilla/websocket"
 	"github.com/patrickmn/go-cache"
 )
@@ -37,10 +39,16 @@ type Message struct {
 func main() {
 	http.HandleFunc("/ws", handleConnections)
 
-	fmt.Println("Video Call Signaling Server started on :8080")
-	err := http.ListenAndServe(":8080", nil)
+	// Get port from environment variable for Railway deployment
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	fmt.Printf("Video Call Signaling Server started on :%s\n", port)
+	err := http.ListenAndServe("0.0.0.0:"+port, nil)
 	if err != nil {
-		fmt.Println("500 | Error starting server:", err)
+		fmt.Printf("Error starting server on port %s: %v\n", port, err)
 	}
 }
 

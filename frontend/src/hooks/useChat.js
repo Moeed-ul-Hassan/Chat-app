@@ -9,9 +9,10 @@ export const useChat = (room, username) => {
     const connect = useCallback(() => {
         if (!room || !username) return;
 
-        // Backend URL (User handles this on :8080)
+        // Backend URL (Use VITE_BACKEND_URL for production, fallback to localhost for dev)
+        const backendHost = import.meta.env.VITE_BACKEND_URL || 'localhost:8080';
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const socketUrl = `${protocol}//localhost:8080/ws?room=${encodeURIComponent(room)}&username=${encodeURIComponent(username)}`;
+        const socketUrl = `${protocol}//${backendHost}/ws?room=${encodeURIComponent(room)}&username=${encodeURIComponent(username)}`;
 
         const socket = new WebSocket(socketUrl);
         socketRef.current = socket;
