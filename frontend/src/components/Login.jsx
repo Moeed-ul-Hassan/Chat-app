@@ -5,11 +5,12 @@ import { motion } from 'framer-motion';
 const Login = ({ onJoin }) => {
     const [username, setUsername] = useState('');
     const [room, setRoom] = useState('General');
+    const [password, setPassword] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (username.trim() && room.trim()) {
-            onJoin(username, room);
+            onJoin(username, room, password);
         }
     };
 
@@ -64,6 +65,20 @@ const Login = ({ onJoin }) => {
                                     onChange={(e) => setRoom(e.target.value)}
                                     className="w-full bg-[#f1f5f9]/50 border-2 border-transparent rounded-[1.25rem] pl-11 sm:pl-12 pr-4 py-3 sm:py-4 text-sm sm:text-base text-slate-700 focus:outline-none focus:bg-white focus:border-[#8b5cf6]/20 transition-all font-medium"
                                     placeholder="Room name"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs sm:text-sm font-bold text-slate-400 ml-1">Secret Key (Optional)</label>
+                            <div className="relative group">
+                                <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#8b5cf6] transition-colors" size={18} />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full bg-[#f1f5f9]/50 border-2 border-transparent rounded-[1.25rem] pl-11 sm:pl-12 pr-4 py-3 sm:py-4 text-sm sm:text-base text-slate-700 focus:outline-none focus:bg-white focus:border-[#8b5cf6]/20 transition-all font-medium"
+                                    placeholder="Enter room password"
                                 />
                             </div>
                         </div>

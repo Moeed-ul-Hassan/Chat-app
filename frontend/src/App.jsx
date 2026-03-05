@@ -13,7 +13,8 @@ function App() {
   // Custom hook for WebSocket management
   const { messages, connected, error, sendMessage, socket } = useChat(
     userAuth?.room,
-    userAuth?.username
+    userAuth?.username,
+    userAuth?.password
   );
 
   const {
@@ -52,8 +53,8 @@ function App() {
     return () => socket.removeEventListener('message', handleMessage);
   }, [socket, handleOffer, handleAnswer, handleCandidate]);
 
-  const handleJoin = (username, room) => {
-    setUserAuth({ username, room });
+  const handleJoin = (username, room, password) => {
+    setUserAuth({ username, room, password });
   };
 
   return (

@@ -24,8 +24,9 @@ var (
 	// Initialize cache with 5 minute default expiration and 10 minute cleanup
 	c = cache.New(5*time.Minute, 10*time.Minute)
 	// Mutex for managing connections safely
-	clientsMu sync.Mutex
-	clients   = make(map[string]map[*websocket.Conn]string) // room -> conn -> username
+	clientsMu     sync.Mutex
+	clients       = make(map[string]map[*websocket.Conn]string) // room -> conn -> username
+	roomPasswords = make(map[string]string)                     // room -> password
 )
 
 type Message struct {
@@ -62,6 +63,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 	room := r.URL.Query().Get("room")
 	username := r.URL.Query().Get("username")
+	password := r.URL.Query().Get("password")
 
 	if room == "" || username == "" {
 		fmt.Println("Missing room or username")
@@ -69,6 +71,20 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 
 	clientsMu.Lock()
+	// Check/Set room password
+	if storedPassword, exists := roomPasswords[room]; exists {
+		if storedPassword != password {
+			clientsMu.Unlock()
+			fmt.Printf("User %s rejected from room %s (wrong password)\n", username, room)
+			ws.WriteJSON(Message{Type: "auth_error", Content: "Invalid secret key for this room"})
+			return
+		}
+	} else {
+		// First user sets the password
+		roomPasswords[room] = password
+		fmt.Printf("Room %s created with password protection\n", room)
+	}
+
 	if _, ok := clients[room]; !ok {
 		clients[room] = make(map[*websocket.Conn]string)
 	}
@@ -95,6 +111,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		delete(clients[room], ws)
 		if len(clients[room]) == 0 {
 			delete(clients, room)
+			delete(roomPasswords, room)
 		}
 		clientsMu.Unlock()
 		fmt.Printf("User %s left room %s\n", username, room)

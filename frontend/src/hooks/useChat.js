@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-export const useChat = (room, username) => {
+export const useChat = (room, username, password) => {
     const [messages, setMessages] = useState([]);
     const [connected, setConnected] = useState(false);
     const [error, setError] = useState(null);
@@ -12,7 +12,7 @@ export const useChat = (room, username) => {
         // Backend URL (Use VITE_BACKEND_URL for production, fallback to localhost for dev)
         const backendHost = import.meta.env.VITE_BACKEND_URL || 'localhost:8080';
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const socketUrl = `${protocol}//${backendHost}/ws?room=${encodeURIComponent(room)}&username=${encodeURIComponent(username)}`;
+        const socketUrl = `${protocol}//${backendHost}/ws?room=${encodeURIComponent(room)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password || '')}`;
 
         const socket = new WebSocket(socketUrl);
         socketRef.current = socket;
@@ -37,6 +37,12 @@ export const useChat = (room, username) => {
                         content: actualMessage,
                         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     }]);
+                    return;
+                }
+
+                if (data.type === 'auth_error') {
+                    setError(data.content);
+                    if (socketRef.current) socketRef.current.close();
                     return;
                 }
 
