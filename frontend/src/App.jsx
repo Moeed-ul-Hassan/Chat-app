@@ -2,16 +2,55 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Login from './components/Login';
 import ChatRoom from './components/ChatRoom';
+import VideoCall from './components/VideoCall';
 import { useChat } from './hooks/useChat';
+import { useVideoCall } from './hooks/useVideoCall';
+import { useEffect } from 'react';
 
 function App() {
   const [userAuth, setUserAuth] = useState(null);
 
   // Custom hook for WebSocket management
-  const { messages, connected, error, sendMessage } = useChat(
+  const { messages, connected, error, sendMessage, socket } = useChat(
     userAuth?.room,
     userAuth?.username
   );
+
+  const {
+    localStream,
+    remoteStream,
+    isCalling,
+    startCall,
+    endCall,
+    handleOffer,
+    handleAnswer,
+    handleCandidate
+  } = useVideoCall(socket, userAuth?.room, userAuth?.username);
+
+  // Handle signaling messages
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMessage = (event) => {
+      const data = JSON.parse(event.data);
+      switch (data.type) {
+        case 'offer':
+          handleOffer(data.content);
+          break;
+        case 'answer':
+          handleAnswer(data.content);
+          break;
+        case 'candidate':
+          handleCandidate(data.content);
+          break;
+        default:
+          break;
+      }
+    };
+
+    socket.addEventListener('message', handleMessage);
+    return () => socket.removeEventListener('message', handleMessage);
+  }, [socket, handleOffer, handleAnswer, handleCandidate]);
 
   const handleJoin = (username, room) => {
     setUserAuth({ username, room });
@@ -45,7 +84,16 @@ function App() {
               messages={messages}
               connected={connected}
               onSendMessage={sendMessage}
+              onStartCall={startCall}
             />
+            {isCalling && (
+              <VideoCall
+                localStream={localStream}
+                remoteStream={remoteStream}
+                isCalling={isCalling}
+                onEnd={endCall}
+              />
+            )}
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

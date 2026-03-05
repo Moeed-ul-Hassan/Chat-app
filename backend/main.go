@@ -1,25 +1,43 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/patrickmn/go-cache"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024, //How much memory we will allocate for reading the message
-	WriteBufferSize: 1024, //How much memory we will allocate for writing the message
-	CheckOrigin: func(r *http.Request) bool {
-		return true // It is much important as it will allow the connection from the frontend
-	},
+var (
+	upgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
+	// Initialize cache with 5 minute default expiration and 10 minute cleanup
+	c = cache.New(5*time.Minute, 10*time.Minute)
+	// Mutex for managing connections safely
+	clientsMu sync.Mutex
+	clients   = make(map[string]map[*websocket.Conn]string) // room -> conn -> username
+)
+
+type Message struct {
+	Type     string `json:"type"`
+	Room     string `json:"room"`
+	Username string `json:"username"`
+	Content  string `json:"content"`
+	FileName string `json:"fileName,omitempty"`
 }
 
 func main() {
-	http.HandleFunc("/ws", handleConnections) //connection router
+	http.HandleFunc("/ws", handleConnections)
 
-	fmt.Println("Chat server started on :8080")
-	// Start the server
+	fmt.Println("Video Call Signaling Server started on :8080")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Println("500 | Error starting server:", err)
@@ -27,7 +45,6 @@ func main() {
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
-	// Upgrade the connection to a WebSocket
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		fmt.Println("Error upgrading connection:", err)
@@ -35,24 +52,76 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 	defer ws.Close()
 
-	fmt.Println("Client connected")
+	room := r.URL.Query().Get("room")
+	username := r.URL.Query().Get("username")
 
-	// Loop to read messages from the client
+	if room == "" || username == "" {
+		fmt.Println("Missing room or username")
+		return
+	}
+
+	clientsMu.Lock()
+	if _, ok := clients[room]; !ok {
+		clients[room] = make(map[*websocket.Conn]string)
+	}
+
+	// Check if user already exists in this room and close their old connection
+	for conn, name := range clients[room] {
+		if name == username {
+			fmt.Printf("Closing stale connection for user %s in room %s\n", username, room)
+			conn.Close()
+			delete(clients[room], conn)
+		}
+	}
+
+	clients[room][ws] = username
+	clientsMu.Unlock()
+
+	// Store session in cache
+	c.Set(fmt.Sprintf("user:%s:%s", room, username), time.Now().Format(time.RFC3339), cache.DefaultExpiration)
+
+	fmt.Printf("User %s joined room %s\n", username, room)
+
+	defer func() {
+		clientsMu.Lock()
+		delete(clients[room], ws)
+		if len(clients[room]) == 0 {
+			delete(clients, room)
+		}
+		clientsMu.Unlock()
+		fmt.Printf("User %s left room %s\n", username, room)
+	}()
+
 	for {
-		// Read message from client
-		messageType, p, err := ws.ReadMessage()
+		_, p, err := ws.ReadMessage()
 		if err != nil {
-			fmt.Println("Error reading message:", err)
 			break
 		}
 
-		// Print the message
-		fmt.Printf("Received: %s\n", p)
+		var msg Message
+		if err := json.Unmarshal(p, &msg); err != nil {
+			fmt.Println("Error unmarshaling message:", err)
+			continue
+		}
 
-		// Echo the message back to the client
-		if err = ws.WriteMessage(messageType, p); err != nil {
-			fmt.Println("Error writing message:", err)
-			break
+		// Broadcast to others in the same room (Signaling should skip sender)
+		echoToSender := msg.Type == "chat"
+		broadcast(msg, ws, echoToSender)
+	}
+}
+
+func broadcast(msg Message, sender *websocket.Conn, echoToSender bool) {
+	clientsMu.Lock()
+	defer clientsMu.Unlock()
+
+	for client := range clients[msg.Room] {
+		if client != sender || echoToSender {
+			err := client.WriteJSON(msg)
+			if err != nil {
+				fmt.Printf("Error broadcasting to %s: %v\n", clients[msg.Room][client], err)
+				client.Close()
+				delete(clients[msg.Room], client)
+			}
 		}
 	}
 }

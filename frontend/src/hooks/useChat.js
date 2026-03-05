@@ -74,13 +74,14 @@ export const useChat = (room, username) => {
         };
     }, [room, username, connect]);
 
-    const sendMessage = (content) => {
+    const sendMessage = (content, type = 'chat', fileName = null) => {
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             const message = {
                 username,
                 content,
-                type: 'chat',
-                room
+                type,
+                room,
+                fileName
             };
             socketRef.current.send(JSON.stringify(message));
         } else {
@@ -88,5 +89,5 @@ export const useChat = (room, username) => {
         }
     };
 
-    return { messages, connected, error, sendMessage };
+    return { messages, connected, error, sendMessage, socket: socketRef.current };
 };

@@ -45,3 +45,12 @@ This document outlines the critical issues identified in our chat application's 
 - **Logic:** Instant response or "offline" status.
 - **Refinement:** Ensure notifications only fire when the user is confirmed active via the heartbeat.
 - **Result:** Reliable notification delivery and reduced noise.
+
+### **4. Learn About MQT Protocol** 
+-  learn this protocol and implement as it is used in Whatsapp.
+
+### **5. Implment Caching**
+-  implement caching to reduce the load on the server.
+
+### **6. Remove bottle neck**
+-  remove bottle neck in the code.
