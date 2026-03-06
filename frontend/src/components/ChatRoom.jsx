@@ -191,7 +191,7 @@ const ChatRoom = ({ room, username, messages, connected, onSendMessage, onStartC
                     className="flex-1 overflow-y-auto p-4 sm:p-10 space-y-8 scroll-smooth pb-40"
                 >
                     <div className="flex justify-center mb-10">
-                        <span className="px-4 py-2 bg-white/50 backdrop-blur-sm text-slate-400 text-[10px] font-black rounded-full border border-white shadow-sm uppercase tracking-widest">Incoming Data</span>
+                        <span className="px-4 py-2 bg-white/50 backdrop-blur-sm text-slate-400 text-[10px] font-black rounded-full border border-white shadow-sm uppercase tracking-widest">Today</span>
                     </div>
 
                     <AnimatePresence initial={false}>
