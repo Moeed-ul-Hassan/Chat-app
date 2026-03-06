@@ -56,20 +56,7 @@ The application is live and accessible at the following URLs:
 
 - **Frontend (Vercel)**: [https://chat-app-md.vercel.app/](https://chat-app-md.vercel.app/)
 - **Backend (Railway)**: [https://chat-app-production-0aff.up.railway.app/](https://chat-app-production-0aff.up.railway.app/)
-
-### ⚙️ Environment Variables
-
-To connect the frontend and backend in production, set the following variables:
-
-#### Vercel (Frontend)
-- `VITE_BACKEND_URL`: `chat-app-production-0aff.up.railway.app`
-  *(Do not include `https://` or `wss://`)*
-
-#### Railway (Backend)
-- `PORT`: (Set automatically by Railway, or defaults to `8080`)
-
-
----
+--
 
 ## 📁 Project Structure
 
