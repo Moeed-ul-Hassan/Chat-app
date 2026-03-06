@@ -294,7 +294,7 @@ const ChatRoom = ({ room, username, messages, connected, onSendMessage, onStartC
                                         type="text"
                                         value={input}
                                         onChange={(e) => setInput(e.target.value)}
-                                        placeholder="What's on your mind"
+                                        placeholder="Type a Message..."
                                         className="flex-1 bg-transparent border-none focus:outline-none text-slate-700 font-bold text-sm sm:text-base placeholder:text-slate-400"
                                     />
                                 )}
