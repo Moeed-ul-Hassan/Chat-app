@@ -31,10 +31,13 @@ var (
 
 type Message struct {
 	Type     string `json:"type"`
+	ID       string `json:"id,omitempty"`
+	TargetID string `json:"targetId,omitempty"` // For linking reactions/reads to specific messages
 	Room     string `json:"room"`
 	Username string `json:"username"`
 	Content  string `json:"content"`
 	FileName string `json:"fileName,omitempty"`
+	Reaction string `json:"reaction,omitempty"`
 }
 
 func main() {

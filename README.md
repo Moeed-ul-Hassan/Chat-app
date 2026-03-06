@@ -62,13 +62,24 @@ The application is live and accessible at the following URLs:
 
 ```bash
 ├── backend/            # Go Backend (Signaling & Caching)
-│   ├── Manager/        # Session Management
-│   └── main.go         # Entry point & WS Relay
+│   ├── cmd/
+│   │   └── echogrid/   # Main application entry point
+│   ├── internal/
+│   │   ├── api/        # REST APIs & WebSocket handlers
+│   │   ├── manager/    # Active Session & Room Management
+│   │   └── store/      # Persistence & SQLite interactions
+│   ├── go.mod          # Go module dependencies
+│   └── main.go         # Legacy / root entry script
 ├── frontend/           # React Frontend (Vite)
+│   ├── public/         # Static assets (icons, screenshots)
 │   ├── src/
-│   │   ├── components/ # VideoCall, ChatRoom, Login
-│   │   ├── hooks/      # useVideoCall, useChat
-│   │   └── App.jsx     # Main Application Logic
+│   │   ├── components/ # UI Components (Login.jsx, ChatRoom.jsx, VideoCall.jsx)
+│   │   ├── hooks/      # Custom Hooks (useChat.js, useVideoCall.js)
+│   │   ├── App.jsx     # Main Application Routing / State
+│   │   ├── index.css   # Tailwind v4 Configuration & Styling
+│   │   └── main.jsx    # React DOM render entry
+│   ├── package.json    # NPM dependencies
+│   └── vite.config.js  # Vite configuration
 └── README.md           # Documentation
 ```
 

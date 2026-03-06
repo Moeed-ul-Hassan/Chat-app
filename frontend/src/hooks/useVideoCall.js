@@ -13,9 +13,9 @@ export const useVideoCall = (socket, room, username) => {
         ],
     };
 
-    const startCall = async () => {
+    const startCall = async (callType = 'video') => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ video: callType === 'video', audio: true });
             setLocalStream(stream);
             setIsCalling(true);
 
@@ -40,20 +40,30 @@ export const useVideoCall = (socket, room, username) => {
             const offer = await peerConnection.current.createOffer();
             await peerConnection.current.setLocalDescription(offer);
 
+            const offerPayload = {
+                sdp: offer,
+                callType: callType
+            };
+
             socket.send(JSON.stringify({
                 type: 'offer',
                 room,
                 username,
-                content: JSON.stringify(offer),
+                content: JSON.stringify(offerPayload),
             }));
         } catch (err) {
             console.error('Error starting call:', err);
         }
     };
 
-    const handleOffer = useCallback(async (offer) => {
+    const handleOffer = useCallback(async (offerContent) => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const parsed = JSON.parse(offerContent);
+            const isRichOffer = parsed.sdp && parsed.callType;
+            const callType = isRichOffer ? parsed.callType : 'video';
+            const offerSdp = isRichOffer ? parsed.sdp : parsed;
+
+            const stream = await navigator.mediaDevices.getUserMedia({ video: callType === 'video', audio: true });
             setLocalStream(stream);
             setIsCalling(true);
 
@@ -75,7 +85,7 @@ export const useVideoCall = (socket, room, username) => {
                 }
             };
 
-            await peerConnection.current.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)));
+            await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offerSdp));
             const answer = await peerConnection.current.createAnswer();
             await peerConnection.current.setLocalDescription(answer);
 

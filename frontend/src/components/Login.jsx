@@ -10,22 +10,34 @@ const Login = ({ onJoin }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (username.trim() && room.trim()) {
-            onJoin(username, room, password);
+            let actualRoom = room.trim();
+            if (actualRoom.toLowerCase() === 'general' && password.trim() !== '') {
+                actualRoom = 'Private';
+            }
+            onJoin(username, actualRoom, password);
         }
     };
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#f8fafc] relative overflow-hidden">
             {/* Soft Background Accents */}
-            <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#ede9fe] rounded-full blur-[100px] opacity-60" />
-            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#e0e7ff] rounded-full blur-[100px] opacity-60" />
+            <motion.div
+                animate={{ y: [0, -30, 0], scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+                className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#ede9fe] rounded-full blur-[100px] opacity-60"
+            />
+            <motion.div
+                animate={{ x: [0, 30, 0], y: [0, 30, 0], scale: [1, 1.15, 1] }}
+                transition={{ repeat: Infinity, duration: 10, ease: "easeInOut", delay: 1 }}
+                className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#e0e7ff] rounded-full blur-[100px] opacity-60"
+            />
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="w-full max-w-md relative z-10"
             >
-                <div className="bg-white rounded-[2.5rem] p-6 sm:p-10 shadow-[0_20px_50px_rgba(139,92,246,0.08)] border border-white">
+                <div className="bg-white/80 backdrop-blur-[16px] rounded-[2.5rem] p-6 sm:p-10 shadow-[0_20px_50px_rgba(139,92,246,0.08)] border border-white">
                     <div className="flex flex-col items-center text-center mb-8 sm:mb-10">
                         <motion.div
                             initial={{ scale: 0 }}
@@ -83,13 +95,21 @@ const Login = ({ onJoin }) => {
                             </div>
                         </div>
 
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             type="submit"
-                            className="w-full bg-[#8b5cf6] text-white font-black py-4 sm:py-4.5 rounded-[1.25rem] flex items-center justify-center gap-3 hover:bg-[#7c3aed] transition-all shadow-xl shadow-violet-200 active:scale-[0.98] mt-4 text-sm sm:text-base"
+                            className="w-full bg-[#8b5cf6] text-white font-black py-4 sm:py-4.5 rounded-[1.25rem] flex items-center justify-center gap-3 hover:bg-[#7c3aed] transition-all shadow-xl shadow-violet-200 mt-4 text-sm sm:text-base relative overflow-hidden group"
                         >
+                            <motion.span
+                                className="absolute inset-0 bg-white/20 rounded-[1.25rem] -translate-x-full group-hover:translate-x-full"
+                                transition={{ duration: 0.5, ease: "easeInOut" }}
+                            />
                             <span>GET STARTED</span>
-                            <ArrowRight size={20} />
-                        </button>
+                            <motion.div animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+                                <ArrowRight size={20} />
+                            </motion.div>
+                        </motion.button>
                     </form>
                 </div>
 

@@ -11,7 +11,7 @@ function App() {
   const [userAuth, setUserAuth] = useState(null);
 
   // Custom hook for WebSocket management
-  const { messages, connected, error, sendMessage, socket } = useChat(
+  const { messages, connected, error, sendMessage, clearMessages, sendTyping, sendReaction, typingUsers, socket } = useChat(
     userAuth?.room,
     userAuth?.username,
     userAuth?.password
@@ -85,7 +85,13 @@ function App() {
               messages={messages}
               connected={connected}
               onSendMessage={sendMessage}
-              onStartCall={startCall}
+              sendTyping={sendTyping}
+              sendReaction={sendReaction}
+              typingUsers={typingUsers}
+              onStartVideoCall={() => startCall('video')}
+              onStartVoiceCall={() => startCall('voice')}
+              onClearChat={clearMessages}
+              onLogout={() => setUserAuth(null)}
             />
             {isCalling && (
               <VideoCall

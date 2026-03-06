@@ -1,10 +1,28 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Video, VideoOff, Phone, PhoneOff } from 'lucide-react';
+import { Video, VideoOff, Phone, PhoneOff, Volume2, VolumeX } from 'lucide-react';
 
 const VideoCall = ({ localStream, remoteStream, isCalling, onStart, onEnd }) => {
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
+    const [isVideoMuted, setIsVideoMuted] = useState(false);
+    const [isSpeakerOn, setIsSpeakerOn] = useState(true);
+
+    const toggleVideo = () => {
+        if (localStream) {
+            localStream.getVideoTracks().forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            setIsVideoMuted(!isVideoMuted);
+        }
+    };
+
+    const toggleSpeaker = () => {
+        if (remoteVideoRef.current) {
+            remoteVideoRef.current.muted = isSpeakerOn;
+            setIsSpeakerOn(!isSpeakerOn);
+        }
+    };
 
     useEffect(() => {
         if (localVideoRef.current && localStream) {
@@ -56,13 +74,36 @@ const VideoCall = ({ localStream, remoteStream, isCalling, onStart, onEnd }) => 
                 </div>
 
                 {/* Controls */}
-                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-6 px-8 py-4 bg-white/5 backdrop-blur-xl rounded-full border border-white/10">
-                    <button
-                        onClick={onEnd}
-                        className="p-4 bg-rose-500 hover:bg-rose-600 rounded-full text-white shadow-lg transition-all active:scale-95"
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-6 px-8 py-4 bg-white/10 backdrop-blur-[16px] rounded-full border border-white/20">
+                    <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={toggleVideo}
+                        className={`p-4 rounded-full text-white shadow-lg transition-colors ${isVideoMuted ? 'bg-slate-700/80' : 'bg-white/20 hover:bg-white/30'}`}
+                        title="Toggle Video"
                     >
-                        <PhoneOff size={24} fill="currentColor" />
-                    </button>
+                        {isVideoMuted ? <VideoOff size={24} /> : <Video size={24} />}
+                    </motion.button>
+
+                    <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={onEnd}
+                        className="p-5 bg-rose-500 hover:bg-rose-600 rounded-full text-white shadow-[0_0_20px_rgba(244,63,94,0.4)] transition-colors"
+                        title="End Call"
+                    >
+                        <PhoneOff size={28} fill="currentColor" />
+                    </motion.button>
+
+                    <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={toggleSpeaker}
+                        className={`p-4 rounded-full text-white shadow-lg transition-colors ${!isSpeakerOn ? 'bg-slate-700/80' : 'bg-white/20 hover:bg-white/30'}`}
+                        title="Toggle Speaker"
+                    >
+                        {isSpeakerOn ? <Volume2 size={24} /> : <VolumeX size={24} />}
+                    </motion.button>
                 </div>
             </div>
         </div>
