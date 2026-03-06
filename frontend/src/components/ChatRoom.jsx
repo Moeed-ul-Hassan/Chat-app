@@ -168,7 +168,7 @@ const ChatRoom = ({ room, username, messages, connected, onSendMessage, onStartC
                         </div>
                         <div>
                             <h2 className="text-sm sm:text-lg font-black text-slate-800 tracking-tight">{room}</h2>
-                            <p className="text-[9px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider">Synchronized</p>
+                            <p className="text-[9px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider">Connected</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-4">
